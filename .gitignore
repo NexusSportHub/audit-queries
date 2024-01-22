@@ -1,5 +1,4 @@
 HELP.md
-
 application.properties
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -37,4 +36,3 @@ build/
 application.properties
 application.yml
 pom.xml
-
