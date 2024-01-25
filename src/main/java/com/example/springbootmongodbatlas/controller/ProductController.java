@@ -26,7 +26,7 @@ public class ProductController {
         return productService.getProductsByUserId(userId);
     }
 
-    @GetMapping("/user/{userId}/status/{status}")
+    @GetMapping("/user/{userId}/{status}")
     public ResponseEntity<List<Product>> getProductsByStatus(@PathVariable String userId, @PathVariable String status) {
         try {
             boolean statusValue = Boolean.parseBoolean(status); // Convierte el valor de la cadena a booleano
@@ -46,6 +46,33 @@ public class ProductController {
     @PutMapping("/update/{id}")
     public Product update(@PathVariable int id, @RequestBody Product product) {
         return productService.updateProduct(id, product);
+    }
+
+    @PutMapping("/user/{userId}/paid")
+    public ResponseEntity<String> updateStatusAndDateForUser(@PathVariable String userId) {
+        try {
+            // Obtén la lista de productos para el userId dado
+            List<Product> products = productService.getProductsByUserId(userId);
+
+            // Actualiza el estado y la fecha actual de los productos que cambian a true por
+            // primera vez
+            for (Product product : products) {
+                if (!product.getStatus()) {
+                    product.setStatus(true);
+                    product.setPaidDate(new java.util.Date());
+                }
+            }
+
+            // Guarda los cambios en la base de datos
+            productService.updateStatusAndDateForUser(products);
+
+            return ResponseEntity
+                    .ok("Estado y fecha actualizados correctamente para los productos del usuario con ID: " + userId);
+        } catch (Exception e) {
+            // Maneja cualquier excepción que pueda ocurrir durante el proceso
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar el estado y la fecha para el usuario con ID: " + userId);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
