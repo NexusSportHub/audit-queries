@@ -23,4 +23,5 @@ public class Product {
     private Boolean status;
     private java.util.Date date;
     private java.util.Date paidDate;
+    private String ApiResponse;
 }
