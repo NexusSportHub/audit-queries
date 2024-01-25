@@ -50,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
         productVar.setStatus(product.getStatus());
         productVar.setDate(product.getDate());
         productVar.setPaidDate(product.getPaidDate());
+        productVar.setApiResponse(product.getApiResponse());
         productRepo.save(productVar);
         return productVar;
 
