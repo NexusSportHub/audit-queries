@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -52,5 +53,19 @@ public class ProductServiceImpl implements ProductService {
         productRepo.save(productVar);
         return productVar;
 
+    }
+
+    @Override
+    public void updateStatusAndDateForUser(List<Product> products) {
+        // Filtra solo los productos que han cambiado su estado a true
+        List<Product> updatedProducts = products.stream()
+                .filter(product -> product.getStatus() && product.getPaidDate() != null)
+                .collect(Collectors.toList());
+
+        // Guarda los cambios en la base de datos solo para los productos que cumplen
+        // con el filtro
+        if (!updatedProducts.isEmpty()) {
+            productRepo.saveAll(updatedProducts);
+        }
     }
 }
