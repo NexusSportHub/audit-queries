@@ -18,6 +18,8 @@ public interface ProductService {
 
     List<Product> getProductsByUserIdAndStatus(String userId, Boolean status);
 
-    // Nuevo método para actualizar el estado y la fecha de una lista de productos
-    void updateStatusAndDateForUser(List<Product> products);
+    Product updateProduct(String id, Product product);
+
+    Product getProductById(String id);
+
 }

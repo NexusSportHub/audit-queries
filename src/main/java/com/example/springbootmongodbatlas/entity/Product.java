@@ -24,4 +24,5 @@ public class Product {
     private java.util.Date date;
     private java.util.Date paidDate;
     private String ApiResponse;
+    private String paymentMethod;
 }
