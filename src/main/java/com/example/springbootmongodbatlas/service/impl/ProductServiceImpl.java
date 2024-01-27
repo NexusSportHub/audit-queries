@@ -1,13 +1,14 @@
 package com.example.springbootmongodbatlas.service.impl;
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.bson.types.ObjectId;
 import com.example.springbootmongodbatlas.entity.Product;
 import com.example.springbootmongodbatlas.repo.ProductRepo;
 import com.example.springbootmongodbatlas.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -35,38 +36,56 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Product getProductById(String id) {
+        return productRepo.findById(new ObjectId(id)).orElse(null);
+    }
+
+    @Override
     public Product deleteProduct(int id) {
-        Product product = productRepo.findById(id).get();
-        productRepo.delete(product);
+        Product product = productRepo.findById(new ObjectId(String.valueOf(id))).orElse(null);
+        if (product != null) {
+            productRepo.delete(product);
+        }
         return product;
     }
 
     @Override
     public Product updateProduct(int id, Product product) {
-        Product productVar = productRepo.findById(id).get();
-        productVar.setUserId(product.getUserId());
-        productVar.setApiUrl(product.getApiUrl());
-        productVar.setPath(product.getPath());
-        productVar.setStatus(product.getStatus());
-        productVar.setDate(product.getDate());
-        productVar.setPaidDate(product.getPaidDate());
-        productVar.setApiResponse(product.getApiResponse());
-        productRepo.save(productVar);
+        Product productVar = productRepo.findById(new ObjectId(String.valueOf(id))).orElse(null);
+        if (productVar != null) {
+            productVar.setUserId(product.getUserId());
+            productVar.setApiUrl(product.getApiUrl());
+            productVar.setPath(product.getPath());
+            productVar.setStatus(product.getStatus());
+            productVar.setDate(product.getDate());
+            productVar.setPaidDate(product.getPaidDate());
+            productVar.setApiResponse(product.getApiResponse());
+            productRepo.save(productVar);
+        }
         return productVar;
-
     }
 
     @Override
-    public void updateStatusAndDateForUser(List<Product> products) {
-        // Filtra solo los productos que han cambiado su estado a true
-        List<Product> updatedProducts = products.stream()
-                .filter(product -> product.getStatus() && product.getPaidDate() != null)
-                .collect(Collectors.toList());
+    public Product updateProduct(String id, Product product) {
+        // Convierte la cadena 'id' a ObjectId
+        ObjectId objectId = new ObjectId(id);
 
-        // Guarda los cambios en la base de datos solo para los productos que cumplen
-        // con el filtro
-        if (!updatedProducts.isEmpty()) {
-            productRepo.saveAll(updatedProducts);
+        // Busca el producto por el ObjectId
+        Product productVar = productRepo.findById(objectId).orElse(null);
+
+        if (productVar != null) {
+            productVar.setUserId(product.getUserId());
+            productVar.setApiUrl(product.getApiUrl());
+            productVar.setPath(product.getPath());
+            productVar.setStatus(product.getStatus());
+            productVar.setDate(product.getDate());
+            productVar.setPaidDate(product.getPaidDate());
+            productVar.setApiResponse(product.getApiResponse());
+            productVar.setPaymentMethod(product.getPaymentMethod());
+            productRepo.save(productVar);
         }
+
+        return productVar;
     }
+
 }

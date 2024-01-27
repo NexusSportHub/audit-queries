@@ -48,30 +48,33 @@ public class ProductController {
         return productService.updateProduct(id, product);
     }
 
-    @PutMapping("/user/{userId}/paid")
-    public ResponseEntity<String> updateStatusAndDateForUser(@PathVariable String userId) {
+    // Nuevo endpoint para actualizar la información de pago
+    @PutMapping("/paid/{id}")
+    public ResponseEntity<String> actualizarInformacionDePago(
+            @PathVariable String id,
+            @RequestParam String metodoDePago) {
         try {
-            // Obtén la lista de productos para el userId dado
-            List<Product> products = productService.getProductsByUserId(userId);
+            // Obtener el producto por ID
+            Product producto = productService.getProductById(id);
 
-            // Actualiza el estado y la fecha actual de los productos que cambian a true por
-            // primera vez
-            for (Product product : products) {
-                if (!product.getStatus()) {
-                    product.setStatus(true);
-                    product.setPaidDate(new java.util.Date());
-                }
+            // Verificar si el producto existe
+            if (producto == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No se encontró ningún producto con la ID: " + id);
             }
 
-            // Guarda los cambios en la base de datos
-            productService.updateStatusAndDateForUser(products);
+            // Actualizar la información de pago, estado y fecha
+            producto.setPaymentMethod(metodoDePago);
+            producto.setStatus(true);
+            producto.setPaidDate(new java.util.Date());
 
-            return ResponseEntity
-                    .ok("Estado y fecha actualizados correctamente para los productos del usuario con ID: " + userId);
+            // Guardar los cambios en la base de datos
+            productService.updateProduct(id, producto);
+
+            return ResponseEntity.ok("Información de pago actualizada correctamente para el producto con ID: " + id);
         } catch (Exception e) {
-            // Maneja cualquier excepción que pueda ocurrir durante el proceso
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al actualizar el estado y la fecha para el usuario con ID: " + userId);
+                    .body("Error al actualizar la información de pago para el producto con ID: " + id);
         }
     }
 
