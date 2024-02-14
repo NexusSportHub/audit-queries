@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -17,16 +16,19 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    // Obtener todos los productos
     @GetMapping("/all")
     public List<Product> getProducts() {
         return productService.getProducts();
     }
 
+    // Obtener productos por ID de usuario
     @GetMapping("/user/{userId}")
     public List<Product> getProductsByUserId(@PathVariable String userId) {
         return productService.getProductsByUserId(userId);
     }
 
+    // Obtener productos por ID de usuario y estado
     @GetMapping("/user/{userId}/{status}")
     public ResponseEntity<List<Product>> getProductsByStatus(@PathVariable String userId, @PathVariable String status) {
         try {
@@ -39,17 +41,19 @@ public class ProductController {
         }
     }
 
+    // Insertar un nuevo producto
     @PostMapping("/insert")
     public Product insert(@RequestBody Product product) {
         return productService.addProduct(product);
     }
 
+    // Actualizar un producto existente por ID
     @PutMapping("/update/{id}")
     public Product update(@PathVariable int id, @RequestBody Product product) {
         return productService.updateProduct(id, product);
     }
 
-    // Nuevo endpoint para actualizar la información de pago
+    // Nuevo endpoint para actualizar la información de pago de un producto
     @PutMapping("/paid/{id}")
     public ResponseEntity<String> actualizarInformacionDePago(
             @PathVariable String id,
@@ -79,9 +83,9 @@ public class ProductController {
         }
     }
 
+    // Eliminar un producto por ID
     @DeleteMapping("/delete/{id}")
     public Product delete(@PathVariable int id) {
-
         return productService.deleteProduct(id);
     }
 }
