@@ -15,14 +15,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Product {
 
     @Id
-    private ObjectId _id;
+    private ObjectId _id; // Identificador único del producto
 
-    private String userId;
-    private String apiUrl;
-    private String path;
-    private Boolean status;
-    private java.util.Date date;
-    private java.util.Date paidDate;
-    private String ApiResponse;
-    private String paymentMethod;
+    private String userId; // ID del usuario asociado al producto
+    private String apiUrl; // URL de la API utilizada
+    private String path; // Ruta dentro de la API
+    private Boolean status; // Estado del producto (activo/inactivo)
+    private java.util.Date date; // Fecha de creación del producto
+    private java.util.Date paidDate; // Fecha de pago del producto
+    private String ApiResponse; // Respuesta de la API
+    private String paymentMethod; // Método de pago utilizado para el producto
 }
