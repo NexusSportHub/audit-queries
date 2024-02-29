@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.springbootmongodbatlas.entity.Product;
@@ -31,6 +33,19 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getProductsByUserIdAndStatus(String userId, Boolean status) {
         return productRepo.findByUserIdAndStatus(userId, status);
+    }
+
+    // Obtener productos por ID de usuario y estado
+    @Override
+    public ResponseEntity<List<Product>> getProductsByStatus(String userId, String status) {
+        try {
+            boolean statusValue = Boolean.parseBoolean(status); // Convierte el valor de la cadena a booleano
+            List<Product> products = getProductsByUserIdAndStatus(userId, statusValue);
+            return ResponseEntity.ok(products);
+        } catch (IllegalArgumentException e) {
+            // Manejar una entrada no válida para el estado (debería ser "true" o "false")
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // Agregar un nuevo producto
@@ -72,23 +87,28 @@ public class ProductServiceImpl implements ProductService {
         return productVar;
     }
 
-    // Actualizar la información de pago de un producto por su ID
+    // Actualizar el estado de todos los productos del usuario y la información de
+    // pago
     @Override
-    public Product updateProduct(String id, Product product) {
-        ObjectId objectId = new ObjectId(id); // Convertir la cadena 'id' a ObjectId
-        Product productVar = productRepo.findById(objectId).orElse(null); // Buscar el producto por su ObjectId
-        if (productVar != null) {
-            productVar.setUserId(product.getUserId());
-            productVar.setApiUrl(product.getApiUrl());
-            productVar.setPath(product.getPath());
-            productVar.setStatus(product.getStatus());
-            productVar.setDate(product.getDate());
-            productVar.setPaidDate(product.getPaidDate());
-            productVar.setApiResponse(product.getApiResponse());
-            productVar.setPaymentMethod(product.getPaymentMethod());
-            productRepo.save(productVar);
+    public ResponseEntity<String> updateProductsStatusAndPaymentMethod(String userId, String paymentMethod) {
+        try {
+            List<Product> products = productRepo.findByUserIdAndStatus(userId, false);
+            if (products.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            for (Product product : products) {
+                product.setStatus(true);
+                product.setPaidDate(new java.util.Date());
+                product.setPaymentMethod(paymentMethod);
+                productRepo.save(product);
+            }
+
+            return ResponseEntity.ok("Se actualizaron correctamente los productos del usuario con ID: " + userId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar los productos del usuario con ID: " + userId);
         }
-        return productVar;
     }
 
 }

@@ -4,6 +4,8 @@ import com.example.springbootmongodbatlas.entity.Product;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+
 public interface ProductService {
 
     // Obtener todos los productos
@@ -24,9 +26,15 @@ public interface ProductService {
     // Obtener productos por ID de usuario y estado
     List<Product> getProductsByUserIdAndStatus(String userId, Boolean status);
 
-    // Actualizar la información de pago de un producto por su ID
-    Product updateProduct(String id, Product product);
+    // Obtener productos por ID de usuario y estado
+
+    public ResponseEntity<List<Product>> getProductsByStatus(String userId, String status);
 
     // Obtener un producto por su ID
     Product getProductById(String id);
+
+    // Actualizar el estado de todos los productos del usuario y la información de
+    // pago
+    ResponseEntity<String> updateProductsStatusAndPaymentMethod(String userId, String paymentMethod);
+
 }
